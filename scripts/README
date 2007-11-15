@@ -5,3 +5,8 @@ n.b., It excludes .svn from the generated packages.
 REQUIREMENTS
 
 * alien fakeroot
+
+POTENTIAL PROBLEMS
+
+* ownership in nested directories
+* nested directories - does .svn get excluded?
