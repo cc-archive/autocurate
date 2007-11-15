@@ -1,4 +1,5 @@
-#!/bin/bash -xe
+#!/bin/bash -e
+# -e to abort immediately on failure
 
 ## NOTE:
 ### uses the bashism getopts
@@ -28,10 +29,6 @@ while getopts ":f:u:p:o:" options; do
     esac
 done
 
-echo "format=$FORMAT"
-echo "TARGET_UID=$TARGET_UID"
-echo "P=$PATH_FROM_ROOT"
-echo "o=$OUTFILE"
 if [[ -z $FORMAT ]] || [[ -z $TARGET_UID ]] || [[ -z $PATH_FROM_ROOT ]] || [[ -z $OUTFILE ]]
 then
      usage
@@ -47,27 +44,28 @@ sleep 1 || exit 1
 
 # Remove any evidence of our work.
 rm -rf pkg-work
-mkdir pkg-work
+mkdir -p pkg-work/root
 
 TARFILE=`mktemp -t make_package_tarfile.XXXXXXXX` &&
 FAKEROOT_STATE=`mktemp -t make_package_fakeroot_state.XXXXXXXXX` && {
 
 # Safe to use $TARFILE here
-tar zcf "$TARFILE" .
+tar zcf "$TARFILE" . --exclude=pkg-work --exclude=.svn
 fakeroot -i "$FAKEROOT_STATE" -s "$FAKEROOT_STATE" mkdir -p pkg-work/"$PATH_FROM_ROOT"
-pushd "pkg-work/$PATH_FROM_ROOT"
+mkdir -p "pkg-work/root/$PATH_FROM_ROOT"
+pushd "pkg-work/root/$PATH_FROM_ROOT"  >/dev/null
 tar zxf "$TARFILE"
 fakeroot -i "$FAKEROOT_STATE" -s "$FAKEROOT_STATE" chown "$TARGET_UID" -R .
-popd
-pushd pkg-work
+popd >/dev/null
+pushd pkg-work/root > /dev/null
 
-SLACKWARE_PACKAGE=slackware.tgz
-fakeroot tar czf $SLACKWARE_PACKAGE .
-RESULTING_PACKAGE=$(fakeroot alien "--to-$FORMAT" "$SLACKWARE_PACKAGE" | awk '{print $1}')
-echo "omg omg omg omg  ----------"
+SLACKWARE_PACKAGE=../slackware.tgz
+fakeroot -i "$FAKEROOT_STATE" -s "$FAKEROOT_STATE" tar czf $SLACKWARE_PACKAGE .
+RESULTING_PACKAGE=$(fakeroot -s "$FAKEROOT_STATE" -i "$FAKEROOT_STATE" alien "--to-$FORMAT" "$SLACKWARE_PACKAGE" | awk '{print $1}')
 OLD=$(pwd)
-popd
-mv -v "$OLD/$RESULTING_PACKAGE" "$OUTFILE"
-echo " -------------- omg omg omg"
+popd >/dev/null
+mv "$OLD/$RESULTING_PACKAGE" "$OUTFILE"
+echo "$OUTFILE created."
+rm -rf pkg-work
 }
 
