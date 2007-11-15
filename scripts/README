@@ -1,0 +1,7 @@
+A little bash script that uses alien to generate little packages.
+
+n.b., It excludes .svn from the generated packages.
+
+REQUIREMENTS
+
+* alien fakeroot
