@@ -32,8 +32,8 @@ def main_returns():
     top_flickrphotos = [ myflickr.photoid2flickrphoto(id) for id in top_ids]
 
     top_non_arr_flickrphotos  = [p for p in top_flickrphotos if p.attrib['license'] != '0' ]
-    top_non_arr_flickr_urls = [biggest_possible_url(p) for p in top_non_arr_flickrphotos]
-    return top_non_arr_flickr_urls # I have thrown away the license metadata
+    top_non_arr_flickr_urls_with_licenses = [(biggest_possible_url(p), myflickr.licensenum2licenseurl(p.attrib['license'])) for p in top_non_arr_flickrphotos]
+    return ['\t'.join(things) for things in top_non_arr_flickr_urls_with_licenses]
 
 def main():
     print '\n'.join(main_returns())
