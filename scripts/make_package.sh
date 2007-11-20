@@ -7,29 +7,31 @@
 usage() {
     cat << EOF
 SAMPLE USAGE:
- ./make_package.sh -f (deb|rpm|tgz) -u 500 -p /home/cc/Desktop/Images/ -o ../filename.deb
+ ./make_package.sh -f (deb|rpm|tgz) -u 500 -p /home/cc/Desktop/Images/ -o ../filename.deb -n flickr_images
 -f means format
 -u means uid
 -p means path from the root
 -o means filename you want to create as output
+-n means the name of the package you want to make
 
 This program turns the current working directory into a package,
 so usually you want -o not to be in this directory.
 EOF
 }
 
-while getopts ":f:u:p:o:" options; do
+while getopts ":f:u:p:o:n:" options; do
     case $options in
         f ) FORMAT="$OPTARG";;
         u ) TARGET_UID="$OPTARG";;
         p ) PATH_FROM_ROOT="$OPTARG";;
         o ) OUTFILE="$OPTARG";;
+        n ) PKGNAME="$OPTARG";;
         * ) usage;
             exit 1;;
     esac
 done
 
-if [[ -z $FORMAT ]] || [[ -z $TARGET_UID ]] || [[ -z $PATH_FROM_ROOT ]] || [[ -z $OUTFILE ]]
+if [[ -z $FORMAT ]] || [[ -z $TARGET_UID ]] || [[ -z $PATH_FROM_ROOT ]] || [[ -z $OUTFILE ]] || [[ -z $PKGNAME ]]
 then
      usage
      exit 1
@@ -59,7 +61,7 @@ fakeroot -i "$FAKEROOT_STATE" -s "$FAKEROOT_STATE" chown "$TARGET_UID" -R .
 popd >/dev/null
 pushd pkg-work/root > /dev/null
 
-SLACKWARE_PACKAGE=../slackware.tgz
+SLACKWARE_PACKAGE=../"$PKGNAME.tgz"
 fakeroot -i "$FAKEROOT_STATE" -s "$FAKEROOT_STATE" tar czf $SLACKWARE_PACKAGE .
 RESULTING_PACKAGE=$(fakeroot -s "$FAKEROOT_STATE" -i "$FAKEROOT_STATE" alien "--to-$FORMAT" "$SLACKWARE_PACKAGE" | awk '{print $1}')
 OLD=$(pwd)
