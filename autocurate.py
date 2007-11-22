@@ -1,7 +1,7 @@
 class Autocurated:
-    url = None
-    attribution_string = None
-    license_uri = None
+    url = ''
+    attribution_string = ''
+    license_uri = ''
     def __str__(self):
         assert '\t' not in self.attribution_string # would violate format
         return '\t'.join( (self.url, self.license_uri, self.attribution_string))
