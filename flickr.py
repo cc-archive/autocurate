@@ -31,12 +31,14 @@ def main_returns():
     # top
     top_photos = top.photos[0].photo
     top_ids = [photo.attrib['id'] for photo in top_photos]
-    top_flickrphotos = [ failsafe(myflickr.photoid2flickrphoto)(id) for id in top_ids]
+    top_flickrphotos = [ myflickr.photoid2flickrphoto(id) for id in top_ids]
     top_flickrphotos = [k for k in top_flickrphotos if k is not None]
 
     top_non_arr_flickrphotos  = [p for p in top_flickrphotos if p.attrib['license'] != '0' ]
-    top_non_arr_flickr_urls_with_licenses = [(biggest_possible_url(p), myflickr.licensenum2licenseurl(p.attrib['license'])) for p in top_non_arr_flickrphotos]
-    return [autocurate.Autocurated(url = thing[0], license_uri = thing[1])
+    top_non_arr_flickr_urls_with_licenses = [(biggest_possible_url(p), myflickr.licensenum2licenseurl(p.attrib['license']), ) for p in top_non_arr_flickrphotos]
+    return [autocurate.Autocurated(url = thing[0], 
+                                   license_uri = thing[1],
+                                   attribution_string='wtf')
             for thing in top_non_arr_flickr_urls_with_licenses]
 
 def main():
