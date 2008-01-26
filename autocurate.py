@@ -1,3 +1,10 @@
+import urllib2
+import urllib
+import os
+
+#def unicode2filename(u):
+#    return urllib.quote(u.encode('utf-8'))
+
 class Autocurated:
     def __str__(self):
         assert '\t' not in self.attribution_string + self.url + self.license_uri # would violate format
@@ -15,6 +22,7 @@ def int_log_10(n):
     return ret
 
 def save_url_to_filename(url, filename):
+    # Byte stream - uses raw open()
     out_fd = open(filename, 'w')
     in_fd = urllib2.urlopen(url)
     s = in_fd.read()
@@ -38,14 +46,15 @@ def thing2filename(thing, num_format, num):
     return '.'.join(parts)
 
 def write_metadata_file(thing, filename):
-    fd = open('filename', 'w')
+    fd = codecs.open(filename, 'w', 'utf-8') # text file - uses codecs
     print >> fd, 'License:', thing.license_uri
     print >> fd, 'Author:', thing.attribution_string
+    fd.close()
 
 def autocurateds2directory(data, directory):
     if os.path.exists(directory):
-        assert not os.path.exists('directory.old') # FIXME sucks
-        os.rename(directory, 'directory.old')
+        assert not os.path.exists(directory + '.old') # FIXME sucks
+        os.rename(directory, directory + '.old')
     os.makedirs(directory, mode=0755)
     os.makedirs(directory + '/credits', mode=0755)
     os.chdir(directory)

@@ -4,6 +4,8 @@ import rose.myflickr as myflickr
 import string
 import mechanize
 
+import flickrmonkey
+
 def photo2url(photo, photo_size="original"):
     ''' Input: a Flickr Photo.  Output: a URL for a photo!'''
     d = photo.__dict__
@@ -56,7 +58,7 @@ def main_returns():
 
 def main():
     data = main_returns()
-    autocurateds2directory('auto_flickr')
+    autocurate.autocurateds2directory(data, 'auto_flickr')
     print 'flickr.py: success!'
 
 def failsafe(fn):
