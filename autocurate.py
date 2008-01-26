@@ -1,6 +1,7 @@
 import urllib2
-import urllib
 import os
+import codecs
+import datetime
 
 #def unicode2filename(u):
 #    return urllib.quote(u.encode('utf-8'))
@@ -38,11 +39,8 @@ def thing2filename(thing, num_format, num):
     formatted_num = num_format % num
 
     base = thing.url.split('/')[-1]
-    if '.' in base:
-        parts = base.rsplit('.', 1)
-        parts[1:2] = [formatted_num]
-    else:
-        parts = [base, formatted_num]
+    parts = base.rsplit('.', 1)
+    parts[1:1] = [formatted_num]
     return '.'.join(parts)
 
 def write_metadata_file(thing, filename):
@@ -53,8 +51,7 @@ def write_metadata_file(thing, filename):
 
 def autocurateds2directory(data, directory):
     if os.path.exists(directory):
-        assert not os.path.exists(directory + '.old') # FIXME sucks
-        os.rename(directory, directory + '.old')
+        os.rename(directory, directory + '.old.' + datetime.datetime.now().strftime('%s'))
     os.makedirs(directory, mode=0755)
     os.makedirs(directory + '/credits', mode=0755)
     os.chdir(directory)

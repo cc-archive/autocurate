@@ -39,13 +39,21 @@ def flickr_photo2attribstring(photo):
             return data[key]
     return data['nsid'] + "on Flickr.com"
 
+## It would be nice to have a try_and_print_error_but_return_none_on_failure decorator for myflickr.photoid2flickrphoto
+
 def main_returns():
     top = myflickr.flickr.interestingness_getList(api_key=myflickr.api_key,per_page='500')
     
     # top
     top_photos = top.photos[0].photo
     top_ids = [photo.attrib['id'] for photo in top_photos]
-    top_flickrphotos = [ myflickr.photoid2flickrphoto(id) for id in top_ids]
+    top_flickrphotos = []
+    for id in top_ids:
+        try:
+            top_flickrphotos.append(myflickr.photoid2flickrphoto(id))
+        except Exception, e:
+            print e
+            # but carry on anyway
     top_flickrphotos = [k for k in top_flickrphotos if k is not None]
 
     top_non_arr_flickrphotos  = [p for p in top_flickrphotos if p.attrib['license'] != '0' ]
