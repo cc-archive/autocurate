@@ -7,3 +7,54 @@ class Autocurated:
         self.attribution_string = attribution_string
         self.license_uri = license_uri
 
+def int_log_10(n):
+    # This sucks, but math.log(1000, 3) returns 2.something not 3.0
+    ret = 0
+    while n > (10 ** ret):
+        ret += 1
+    return ret
+
+def save_url_to_filename(url, filename):
+    out_fd = open(filename, 'w')
+    in_fd = urllib2.urlopen(url)
+    s = in_fd.read()
+    out_fd.write(s)
+    out_fd.close()
+
+def data2numberformat(data):
+    length = len(data)
+    length_log_10 = int_log_10(length)
+    return '%0' + str(length_log_10) + 'd'
+
+def thing2filename(thing, num_format, num):
+    formatted_num = num_format % num
+
+    base = thing.url.split('/')[-1]
+    if '.' in base:
+        parts = base.rsplit('.', 1)
+        parts[1:2] = [formatted_num]
+    else:
+        parts = [base, formatted_num]
+    return '.'.join(parts)
+
+def write_metadata_file(thing, filename):
+    fd = open('filename', 'w')
+    print >> fd, 'License:', thing.license_uri
+    print >> fd, 'Author:', thing.attribution_string
+
+def autocurateds2directory(data, directory):
+    if os.path.exists(directory):
+        assert not os.path.exists('directory.old') # FIXME sucks
+        os.rename(directory, 'directory.old')
+    os.makedirs(directory, mode=0755)
+    os.makedirs(directory + '/credits', mode=0755)
+    os.chdir(directory)
+
+    num_format = data2numberformat(data)
+    
+    for num, thing in enumerate(data):
+        filename = thing2filename(thing, num_format, num)
+        # save it
+        save_url_to_filename(thing.url, filename)
+        # write metadata file
+        write_metadata_file(thing, 'credits/' + filename)

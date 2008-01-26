@@ -55,7 +55,9 @@ def main_returns():
             for thing in top_non_arr_flickr_urls_with_licenses]
 
 def main():
-    print '\n'.join(map(str, main_returns()))
+    data = main_returns()
+    autocurateds2directory('auto_flickr')
+    print 'flickr.py: success!'
 
 def failsafe(fn):
     def inner_fn(*args, **kwargs):
