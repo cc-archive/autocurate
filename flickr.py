@@ -4,6 +4,8 @@ import rose.myflickr as myflickr
 import string
 import mechanize
 
+TARGET_DIRECTORY="Flickr.com Interesting photos"
+
 import flickrmonkey
 
 def photo2url(photo, photo_size="original"):
@@ -66,8 +68,17 @@ def main_returns():
 
 def main():
     data = main_returns()
-    autocurate.autocurateds2directory(data, 'auto_flickr')
+    autocurate.autocurateds2directory(data, TARGET_DIRECTORY)
     print 'flickr.py: success!'
+
+def return_tar():
+    # Pick filename
+    tempfile = tempfile.NamedTemporaryFile()
+    subprocess.check_call(['tar', 'zcvf', tempfile.name, TARGET_DIRECTORY])
+    buffer = open(tempfile.name).read()
+    tempfile.unlink(tempfile.name) # Why is this syntax ugly as sin?
+    return buffer
+    
 
 def failsafe(fn):
     def inner_fn(*args, **kwargs):
