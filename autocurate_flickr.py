@@ -5,6 +5,13 @@ import string
 import mechanize
 import tempfile
 import subprocess
+import os
+
+def tar_directory(directory):
+    p = subprocess.Popen(['tar', 'zcf', '-', directory],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+    tar_output = p.stdout.read() # blocks
+    return tar_output    
 
 TARGET_DIRECTORY = "Flickr.com Interesting photos"
 
@@ -75,13 +82,7 @@ def main():
     print 'flickr.py: success!'
 
 def return_tar():
-    # Pick filename
-    myfile = tempfile.NamedTemporaryFile()
-    subprocess.check_call(['tar', 'zcf', myfile.name, TARGET_DIRECTORY])
-    file_contents = open(myfile.name).read()
-    tempfile.unlink(myfile.name) # Why is this syntax ugly as sin?
-    return file_contents
-    
+    return tar_directory(TARGET_DIRECTORY)
 
 def failsafe(fn):
     def inner_fn(*args, **kwargs):
