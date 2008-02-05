@@ -3,8 +3,10 @@ import sys
 import rose.myflickr as myflickr
 import string
 import mechanize
+import tempfile
+import subprocess
 
-TARGET_DIRECTORY="Flickr.com Interesting photos"
+TARGET_DIRECTORY = "Flickr.com Interesting photos"
 
 import flickrmonkey
 
@@ -12,7 +14,7 @@ def photo2url(photo, photo_size="original"):
     ''' Input: a Flickr Photo.  Output: a URL for a photo!'''
     d = photo.__dict__
     size = {'75x75': '_s', 'thumbnail': '_t', 'small': '_m', 'medium': '', 'large': '_b', 'original': '_o'}
-    t =string.Template('http://farm${farm}.static.flickr.com/${server}/${id}_${secret}%s.jpg' % size[photo_size])
+    t = string.Template('http://farm${farm}.static.flickr.com/${server}/${id}_${secret}%s.jpg' % size[photo_size])
     return t.substitute(d['attrib'])
 
 def biggest_possible_url(photo):
@@ -44,7 +46,8 @@ def flickr_photo2attribstring(photo):
 ## It would be nice to have a try_and_print_error_but_return_none_on_failure decorator for myflickr.photoid2flickrphoto
 
 def main_returns():
-    top = myflickr.flickr.interestingness_getList(api_key=myflickr.api_key,per_page='500')
+    top = myflickr.flickr.interestingness_getList(api_key=myflickr.api_key,
+            per_page='500')
     
     # top
     top_photos = top.photos[0].photo
@@ -73,11 +76,11 @@ def main():
 
 def return_tar():
     # Pick filename
-    tempfile = tempfile.NamedTemporaryFile()
-    subprocess.check_call(['tar', 'zcvf', tempfile.name, TARGET_DIRECTORY])
-    buffer = open(tempfile.name).read()
-    tempfile.unlink(tempfile.name) # Why is this syntax ugly as sin?
-    return buffer
+    myfile = tempfile.NamedTemporaryFile()
+    subprocess.check_call(['tar', 'zcf', myfile.name, TARGET_DIRECTORY])
+    file_contents = open(myfile.name).read()
+    tempfile.unlink(myfile.name) # Why is this syntax ugly as sin?
+    return file_contents
     
 
 def failsafe(fn):
