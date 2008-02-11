@@ -7,8 +7,6 @@ import tempfile
 import subprocess
 import os
 
-os.chdir('/home/paulproteus/cctools/autocurate/trunk')
-
 def tar_directory(directory):
     p = subprocess.Popen(['tar', 'zcf', '-', directory],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)

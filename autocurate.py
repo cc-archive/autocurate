@@ -50,6 +50,8 @@ def write_metadata_file(thing, filename):
     fd.close()
 
 def autocurateds2directory(data, directory):
+    orig_cwd = os.getcwd()
+
     if os.path.exists(directory):
         os.rename(directory, directory + '.old.' + datetime.datetime.now().strftime('%s'))
     os.makedirs(directory, mode=0755)
@@ -64,3 +66,5 @@ def autocurateds2directory(data, directory):
         save_url_to_filename(thing.url, filename)
         # write metadata file
         write_metadata_file(thing, 'credits/' + filename)
+
+    os.chdir(orig_cwd)
