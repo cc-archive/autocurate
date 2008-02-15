@@ -65,6 +65,6 @@ def autocurateds2directory(data, directory):
         # save it
         save_url_to_filename(thing.url, filename)
         # write metadata file
-        write_metadata_file(thing, 'credits/' + filename)
+        write_metadata_file(thing, 'credits/' + filename + '.txt')
 
     os.chdir(orig_cwd)
