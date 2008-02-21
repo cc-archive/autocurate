@@ -52,6 +52,8 @@ def flickr_photo2attribstring(photo):
                 ret[key.capitalize()] = data[key]
     # Plus make a note of Flickr ID
     ret['ID on Flickr.com'] = data['nsid']
+    # Plus, make a note of the Flickr photo URL
+    ret['Original URL'] = 'http://www.flickr.com/photos/' + photo.owner[0].attrib['nsid'] + '/' + photo.attrib['id'] + '/'
     return ret
 
 ## It would be nice to have a try_and_print_error_but_return_none_on_failure decorator for myflickr.photoid2flickrphoto
