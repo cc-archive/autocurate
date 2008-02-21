@@ -49,7 +49,7 @@ def flickr_photo2attribstring(photo):
     for key in order:
         if key in data:
             if data[key]:
-                ret[order.capitalize()] = data[key]
+                ret[key.capitalize()] = data[key]
     # Plus make a note of Flickr ID
     ret['ID on Flickr.com'] = data['nsid']
     return ret
