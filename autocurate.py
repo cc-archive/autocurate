@@ -8,11 +8,11 @@ import datetime
 
 class Autocurated:
     def __str__(self):
-        assert '\t' not in self.attribution_string + self.url + self.license_uri # would violate format
-        return '\t'.join( (self.url, self.license_uri, self.attribution_string))
-    def __init__(self, url = None, attribution_string = '', license_uri = None):
+        assert '\t' not in `self.attribution_dict` + self.url + self.license_uri # would violate format
+        return '\t'.join( (self.url, self.license_uri, `self.attribution_dict`))
+    def __init__(self, url = None, attribution_dict = {}, license_uri = None):
         self.url = url
-        self.attribution_string = attribution_string
+        self.attribution_dict = attribution_dict
         self.license_uri = license_uri
 
 def int_log_10(n):
@@ -46,7 +46,8 @@ def thing2filename(thing, num_format, num):
 def write_metadata_file(thing, filename):
     fd = codecs.open(filename, 'w', 'utf-8') # text file - uses codecs
     print >> fd, 'License:', thing.license_uri
-    print >> fd, 'Author:', thing.attribution_string
+    for key in thing.attribution_dict:
+        print >> fd, key + ':', thing.attribution_dict[key]
     fd.close()
 
 def autocurateds2directory(data, directory):

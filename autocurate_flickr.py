@@ -3,9 +3,7 @@ import sys
 import rose.myflickr as myflickr
 import string
 import mechanize
-import tempfile
 import subprocess
-import os
 
 def tar_directory(directory):
     p = subprocess.Popen(['tar', 'zcf', '-', directory],
@@ -43,12 +41,18 @@ def url_is_unavailable(u):
     return False
 
 def flickr_photo2attribstring(photo):
+    ''' Input: A photo
+    Output: A dict of all the information we have about it'''
     data = photo.owner[0].attrib
+    ret = {}
     order = ['realname', 'username']
     for key in order:
         if key in data:
-            return data[key]
-    return data['nsid'] + "on Flickr.com"
+            if data[key]:
+                ret[order.capitalize()] = data[key]
+    # Plus make a note of Flickr ID
+    ret['ID on Flickr.com'] = data['nsid']
+    return ret
 
 ## It would be nice to have a try_and_print_error_but_return_none_on_failure decorator for myflickr.photoid2flickrphoto
 
@@ -73,7 +77,7 @@ def main_returns():
 
     return [autocurate.Autocurated(url = thing[0], 
                                    license_uri = thing[1],
-                                   attribution_string=thing[2])
+                                   attribution_dict=thing[2])
             for thing in top_non_arr_flickr_urls_with_licenses]
 
 def main():
