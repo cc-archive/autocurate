@@ -7,14 +7,26 @@ import BeautifulSoup
 old_parseString = xml.dom.expatbuilder.ExpatBuilder.parseString
 
 def is_valid_xml(maybe_valid):
+    ret = False
+    ### Jam old_parseString back for a moment
+    ### God, the horrors of monkey patching.
+    fake_parseString = None
+    if xml.dom.expatbuilder.ExpatBuilder.parseString != old_parseString:
+        fake_parseString = xml.dom.expatbuilder.ExpatBuilder.parseString
+        xml.dom.expatbuilder.ExpatBuilder.parseString = old_parseString
     try:
         parsed = xml.dom.minidom.parseString(maybe_valid)
-        return True
+        ret = True
     except xml.parsers.expat.ExpatError:
-        return False
+        ret = False
+    ### Restore the monkey patched version, geez.
+    if fake_parseString:
+        xml.dom.expatbuilder.ExpatBuilder.parseString = fake_parseString
+    return ret
 
 def new_parseString(self, string):
     if is_valid_xml(string):
+        print "FYI, original parseString"
         return old_parseString(self, string)
     else:
         print "FYI, Asheesh's parseString"
